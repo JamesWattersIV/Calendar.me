@@ -6,7 +6,7 @@ import 'package:calendarapp/screens/calendar_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:calendarapp/components/InputFieldTitle.dart';
 import 'package:calendarapp/services/error_handle.dart';
-
+import 'package:calendarapp/services/firebase_manager.dart';
 class LoginScreen extends StatefulWidget {
 
   static const String id= 'login_screen';

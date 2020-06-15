@@ -4,15 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:calendarapp/models/task_data.dart';
 import 'package:calendarapp/models/Task.dart';
 
+String newTaskTitle;
 
 class AddBottomSheet extends StatelessWidget{
-
-  String newTaskTitle;
-
   @override
   Widget build(BuildContext context) {
-
-
 
     return SingleChildScrollView(
       child: Container(

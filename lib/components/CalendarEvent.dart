@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 class CalendarEvent extends StatelessWidget {
 
-  CalendarEvent({@required this.time, @required this.eventName});
+  CalendarEvent({@required this.time, @required this.eventName, @required this.eventDate});
 
     final String time;
     final String eventName;
+    final String eventDate;
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +68,22 @@ class CalendarEvent extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                child: Icon(Icons.arrow_forward_ios,
-                    color:
-                    Color.fromRGBO(124, 129, 146, 1.0)),
-              ),
+              Column(children: [
+                Expanded(
+                    child: Container(
+                      child: Icon(Icons.calendar_today,
+                          color:
+                          Color.fromRGBO(124, 129, 146, 1.0)),
+                    )),
+                Text('$eventDate',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      color:
+                      Color.fromRGBO(124, 129, 146, 1.0),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                    ))
+              ]),
             ],
           ),
         ),

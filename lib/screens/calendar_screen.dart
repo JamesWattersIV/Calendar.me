@@ -1,4 +1,7 @@
+import 'package:calendarapp/components/AddEventSheet.dart';
 import 'package:calendarapp/models/task_data.dart';
+import 'package:calendarapp/models/event_data.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +11,9 @@ import 'package:provider/provider.dart';
 
 import 'package:calendarapp/components/CalendarEvent.dart';
 import 'package:calendarapp/components/TaskTile.dart';
+import 'package:calendarapp/components/EventTile.dart';
 import 'package:calendarapp/components/AddBottomSheet.dart';
+import 'package:calendarapp/services/firebase_manager.dart';
 
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
     show CalendarCarousel;
@@ -24,26 +29,51 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
+  final _firestore = Firestore.instance;
   FirebaseUser loggedInUser;
   DateTime _currentDate;
   AnimationController controller;
   bool checkedValue = true;
+  String username = '';
+  FireBaseManager fbManager = new FireBaseManager();
+  List globalEvents;
 
   void getCurrentUser() async {
     try {
       final user = await _auth.currentUser();
       if (user != null) {
         loggedInUser = user;
+        final tempUsername = await fbManager.getUsername(loggedInUser);
+        if (tempUsername != null) {
+          setState(() {
+            username = tempUsername;
+          });
+          getFirebaseList();
+        }
+        print(username);
       }
     } catch (e) {
       print(e);
     }
   }
 
+  void getFirebaseList() async {
+    final user = await _firestore.collection('users').where('uid', isEqualTo: loggedInUser.uid).getDocuments();
+    if( user != null){
+      globalEvents = user.documents[0].data['events'];
+      if(globalEvents.length != 0){
+        final testEventData = Provider.of<EventData>(context, listen: false);
+        for (var i = 0; i < globalEvents.length; i++) {
+          testEventData.addEvent(globalEvents[i]['title'], globalEvents[i]['date'], globalEvents[i]['time']);
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    getCurrentUser(); //Add spinner for this and getting events
   }
 
   @override
@@ -54,156 +84,208 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TaskData>(
-      builder: (context, taskData,child){
-        return MaterialApp(
-            home: Scaffold(
-              body: DefaultTabController(
-                length: 3,
-                child: Scaffold(
-                  appBar: PreferredSize(
-                    preferredSize: Size.fromHeight(50.0),
-                    child: AppBar(
-                      bottom: TabBar(
-                        indicatorColor: Colors.white,
-                        tabs: [
-                          Tab(
-                            text: 'Today',
-                          ),
-                          Tab(
-                            text: 'Calendar',
-                          ),
-                          Tab(
-                            text: 'Events',
-                          )
-                        ],
-                      ),
-                      backgroundColor: Color.fromRGBO(31, 48, 83, 1.0),
+    return Consumer<TaskData>(builder: (context, taskData, child) {
+      return Consumer<EventData>(builder:(context,eventData,child){
+      return MaterialApp(
+          home: Scaffold(
+        body: DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: AppBar(
+                bottom: TabBar(
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      text: 'Today',
+                    ),
+                    Tab(
+                      text: 'Calendar',
+                    ),
+                    Tab(
+                      text: 'Events',
+                    )
+                  ],
+                ),
+                backgroundColor: Color.fromRGBO(31, 48, 83, 1.0),
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    backgroundColor: Color.fromRGBO(31, 48, 83, 1.0),
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      showModalBottomSheet(
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (context) => AddBottomSheet());
+                    },
+                  ),
+                  body: Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage('assets/images/WelcomeBG.png'),
+                            fit: BoxFit.cover)),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 20.0,
+                            ),
+                            Text("Hi $username,", style: kRotatingTextStyle),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 20.0,
+                            ),
+                            Text("Own Your Day!",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Poppins',
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 8.0,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 20.0,
+                            ),
+                            Text("${taskData.taskCount} Tasks",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Poppins',
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      topRight: Radius.circular(20.0))),
+                              child: ListView.builder(
+                                itemBuilder: (context, index) {
+                                  return TaskTile(
+                                    taskTitle: taskData.tasks[index].name,
+                                    isChecked: taskData.tasks[index].isDone,
+                                    checkboxCallback: (checkboxState) {
+                                      taskData
+                                          .updateTask(taskData.tasks[index]);
+                                    },
+                                    longpressCallback: () {
+                                      taskData
+                                          .deleteTask(taskData.tasks[index]);
+                                    },
+                                  );
+                                },
+                                itemCount: taskData.taskCount,
+                              ),
+                            ))
+                      ],
                     ),
                   ),
-                  body: TabBarView(
-                    children: [
-                      Scaffold(
-                        floatingActionButton: FloatingActionButton(
-                          backgroundColor: Color.fromRGBO(31, 48, 83, 1.0),
-                          child: Icon(Icons.add),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (context) => AddBottomSheet());
-                          },
-                        ),
-                        body: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage('assets/images/WelcomeBG.png'),
-                                  fit: BoxFit.cover)),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 20.0,
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  Text("Hi James,", style: kRotatingTextStyle),
-                                ],
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  Text("Own Your Day!",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: 'Poppins',
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.w400)),
-
-                                ],
-                              ),
-                              SizedBox(
-                                height: 8.0,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  Text(
-                                      "${taskData.taskCount} Tasks",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: 'Poppins',
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.w400)),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 20.0,
-                              ),
-                              Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20.0),
-                                            topRight: Radius.circular(20.0))),
-                                    child: ListView.builder(
-                                      itemBuilder: (context, index) {
-                                        return TaskTile(
-                                          taskTitle: taskData
-                                              .tasks[index]
-                                              .name,
-                                          isChecked:  taskData
-                                              .tasks[index]
-                                              .isDone,
-                                          checkboxCallback: (checkboxState) {
-                                            taskData.updateTask(taskData.tasks[index]);
-                                          },
-                                          longpressCallback: (){
-                                            taskData.deleteTask(taskData.tasks[index]);
-
-                                          },
-                                        );
-                                      },
-                                      itemCount:
-                                      taskData.taskCount,
-                                    ),
-                                  ))
-                            ],
+                ),
+                Column(
+                  children: [
+                    Container(
+                      child: buildCalendarCarousel(),
+                    ),
+                    Expanded(
+                        flex: 1,
+                        child: ListView(
+                          children: <Widget>[
+                            CalendarEvent(
+                                time: '11:00', eventName: 'Qno Meeting'),
+                          ],
+                        ))
+                  ],
+                ),
+                Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    backgroundColor: Color.fromRGBO(31, 48, 83, 1.0),
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      showModalBottomSheet(
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (context) => AddEventSheet(loggedInUser));
+                    },
+                  ),
+                  body: Container(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20.0),
+                        Text(
+                          'Upcoming Events',
+                          style: TextStyle(
+                              color: Color.fromRGBO(31, 48, 83, 1.0),
+                              fontFamily: 'Poppins',
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.w400
                           ),
                         ),
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: buildCalendarCarousel(),
-                          ),
-                          Expanded(
-                              flex: 1,
-                              child: ListView(
-                                children: <Widget>[
-                                  CalendarEvent(
-                                      time: '11:00', eventName: 'Qno Meeting'),
-                                ],
-                              ))
-                        ],
-                      ),
-                      Icon(Icons.directions_bike),
-                    ],
+                        SizedBox(
+                            height: 20.0),
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 0.0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      topRight: Radius.circular(20.0))),
+                              child: ListView.builder(
+                                itemBuilder: (context, index) {
+                                  return EventTile(
+                                    eventTitle: eventData.events[index].title,
+                                    eventTime: eventData.events[index].time,
+                                    eventDate: eventData.events[index].date,
+                                    checkboxCallback: (checkboxState) {
+                                      eventData
+                                          .updateEvent(eventData.events[index]);
+                                    },
+                                    longpressCallback: () {
+                                      eventData
+                                          .deleteEvent(eventData.events[index]);
+                                      eventData.removeFromFirebase(loggedInUser,index);
+                                    },
+                                  );
+                                },
+                                itemCount: eventData.eventCount,
+                              ),
+                            ))
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ));
-      }
-    );
+              ],
+            ),
+          ),
+        ),
+      ));
+      });
+    });
   }
 
   static Widget _eventIcon = Container(
