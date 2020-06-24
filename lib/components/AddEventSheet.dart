@@ -6,6 +6,7 @@ import 'package:calendarapp/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:calendarapp/models/event_data.dart';
 import 'package:calendarapp/models/Event.dart';
+import 'package:calendarapp/services/date_time_handler.dart';
 
 import 'InputFieldTitle.dart';
 
@@ -13,6 +14,7 @@ String newEventTitle;
 String newEventTime;
 String newEventDate;
 DateTime eventDateTime;
+final dateTimeHandler = new DateTimeHandler();
 
 
 void setDateandTime(){
@@ -20,9 +22,8 @@ void setDateandTime(){
     eventDateTime = DateTime.now();
   }
   List<String> arrDateTime = eventDateTime.toString().split(' ');
-  String tempEventDate = arrDateTime[0];
   String tempEventTime = arrDateTime[1];
-  handleDate(tempEventDate);
+  handleDate(eventDateTime);
   handleTime(tempEventTime);
 }
 
@@ -31,63 +32,8 @@ void handleTime(String fullTime){
   newEventTime = arrTime[0]+':'+arrTime[1];
 }
 
-void handleDate(String fullDate){
-  List<String> arrDate = fullDate.split('-');
-  print(arrDate);
-  String month;
-  String day;
-  switch (arrDate[1]){
-    case '01':month = 'Jan';
-    break;
-    case "02":month ='Feb';
-    break;
-    case '03':month = 'Mar';
-    break;
-    case "04":month ='Apr';
-    break;
-    case '05':month = 'May';
-    break;
-    case "06":month ='Jun';
-    break;
-    case '07':month = 'Jul';
-    break;
-    case "09":month ='Aug';
-    break;
-    case '09':month = 'Sep';
-    break;
-    case "10":month ='Oct';
-    break;
-    case '11':month = 'Nov';
-    break;
-    case "12":month ='Dec';
-    break;
-  }
-
-  switch (arrDate[2]){
-    case '01':day = '1';
-    break;
-    case "02":day ='2';
-    break;
-    case '03':day = '3';
-    break;
-    case "04":day ='4';
-    break;
-    case '05':day = '5';
-    break;
-    case "06":day ='6';
-    break;
-    case '07':day = '7';
-    break;
-    case "09":day ='8';
-    break;
-    case '09':day = '9';
-    break;
-    default: day =arrDate[2];
-    break;
-  }
-
-  newEventDate = day + ' ' + month;
-
+void handleDate(DateTime fullDate){
+  newEventDate = dateTimeHandler.handleFullDate(fullDate);
 }
 
 void addNewEvent(BuildContext context, FirebaseUser user){
@@ -95,9 +41,6 @@ void addNewEvent(BuildContext context, FirebaseUser user){
   Provider.of<EventData>(context, listen: false).updateFirebase(user,newEventTitle,newEventDate,newEventTime);
 }
 
-void addToFirebase(){
-
-}
 
 class AddEventSheet extends StatelessWidget {
 
@@ -165,6 +108,9 @@ class AddEventSheet extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
                   child: FlatButton(
+                    shape:RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                    ) ,
                     padding: EdgeInsets.all(10.0),
                     child: Text(
                       'Add',

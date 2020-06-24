@@ -73,7 +73,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser(); //Add spinner for this and getting events
+    getCurrentUser();
+    //Add spinner for this and getting events
   }
 
   @override
@@ -96,12 +97,17 @@ class _ChatScreenState extends State<ChatScreen> {
               child: AppBar(
                 bottom: TabBar(
                   indicatorColor: Colors.white,
+                  onTap:(value){
+                    print('Tab Clicked');
+                    eventData.createDailyList(DateTime.now());
+                  },
                   tabs: [
                     Tab(
                       text: 'Today',
                     ),
                     Tab(
                       text: 'Calendar',
+
                     ),
                     Tab(
                       text: 'Events',
@@ -208,16 +214,88 @@ class _ChatScreenState extends State<ChatScreen> {
                 Column(
                   children: [
                     Container(
-                      child: buildCalendarCarousel(),
+                      child: CalendarCarousel<Event>(
+                        onDayPressed: (DateTime date, List<Event> events) {
+                          this.setState(() => _currentDate = date);
+                          eventData.createDailyList(date);
+                        },
+                        todayBorderColor: Color.fromRGBO(31, 48, 83, 1.0),
+                        todayButtonColor: Color.fromRGBO(31, 48, 83, 1.0),
+                        iconColor: Color.fromRGBO(31, 48, 83, 1.0),
+                        selectedDayButtonColor: Color.fromRGBO(242, 242, 242, 1.0),
+                        selectedDayTextStyle: TextStyle(
+                            fontSize: 14.0,
+                            color: Color.fromRGBO(31, 48, 83, 1.0),
+                            fontWeight: FontWeight.w900),
+                        weekdayTextStyle: TextStyle(
+                          fontSize: 14.0,
+                          color: Color.fromRGBO(31, 48, 83, 1.0),
+                        ),
+                        headerTextStyle: TextStyle(
+                          color: Color.fromRGBO(31, 48, 83, 1.0),
+                          fontFamily: 'Poppins',
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.w300,
+                        ),
+                        weekendTextStyle: TextStyle(
+                          color: Color.fromRGBO(44, 152, 240, 1.0),
+                        ),
+                        thisMonthDayBorderColor: Color.fromRGBO(31, 48, 83, 1.0),
+//      weekDays: null, /// for pass null when you do not want to render weekDays
+//      headerText: Container( /// Example for rendering custom header
+//        child: Text('Custom Header'),
+//      ),
+                        customDayBuilder: (
+                            /// you can provide your own build function to make custom day containers
+                            bool isSelectable,
+                            int index,
+                            bool isSelectedDay,
+                            bool isToday,
+                            bool isPrevMonthDay,
+                            TextStyle textStyle,
+                            bool isNextMonthDay,
+                            bool isThisMonthDay,
+                            DateTime day,
+                            ) {
+                          /// If you return null, [CalendarCarousel] will build container for current [day] with default function.
+                          /// This way you can build custom containers for specific days only, leaving rest as default.
+
+                          //Example: every 15th of month, we have a flight, we can place an icon in the container like that:
+                          /*if (day.day == 15) {
+                  return Center(
+                    child: Icon(Icons.local_airport),
+                  );
+                } else {
+                  return null;
+                }*/
+                          return null;
+                        },
+                        weekFormat: false,
+                        markedDatesMap: _markedDateMap,
+                        height: 400.0,
+                        selectedDateTime: _currentDate,
+                        daysHaveCircularBorder: null,
+
+                        /// null for not rendering any border, true for circular border, false for rectangular border
+                      ),
                     ),
                     Expanded(
                         flex: 1,
-                        child: ListView(
-                          children: <Widget>[
-                            CalendarEvent(
-                                time: '11:00', eventName: 'Qno Meeting'),
-                          ],
-                        ))
+                        child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return EventTile(
+                              eventTitle: eventData.dailyEvents[index].title,
+                              eventTime: eventData.dailyEvents[index].time,
+                              eventDate: eventData.dailyEvents[index].date,
+                              checkboxCallback: (checkboxState) {
+                                eventData
+                                    .updateEvent(eventData.dailyEvents[index]);
+                              },
+                            );
+                          },
+                          itemCount: eventData.eventDailyCount,
+                        ),
+                    )
                   ],
                 ),
                 Scaffold(
@@ -265,10 +343,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                       eventData
                                           .updateEvent(eventData.events[index]);
                                     },
-                                    longpressCallback: () {
+                                    longpressCallback: () async {
+                                      await eventData.removeFromFirebase(loggedInUser,index);
                                       eventData
                                           .deleteEvent(eventData.events[index]);
-                                      eventData.removeFromFirebase(loggedInUser,index);
                                     },
                                   );
                                 },
@@ -325,72 +403,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ],
     },
   );
-
-  CalendarCarousel<Event> buildCalendarCarousel() {
-    return CalendarCarousel<Event>(
-      onDayPressed: (DateTime date, List<Event> events) {
-        this.setState(() => _currentDate = date);
-      },
-      todayBorderColor: Color.fromRGBO(31, 48, 83, 1.0),
-      todayButtonColor: Color.fromRGBO(31, 48, 83, 1.0),
-      iconColor: Color.fromRGBO(31, 48, 83, 1.0),
-      selectedDayButtonColor: Color.fromRGBO(242, 242, 242, 1.0),
-      selectedDayTextStyle: TextStyle(
-          fontSize: 14.0,
-          color: Color.fromRGBO(31, 48, 83, 1.0),
-          fontWeight: FontWeight.w900),
-      weekdayTextStyle: TextStyle(
-        fontSize: 14.0,
-        color: Color.fromRGBO(31, 48, 83, 1.0),
-      ),
-      headerTextStyle: TextStyle(
-        color: Color.fromRGBO(31, 48, 83, 1.0),
-        fontFamily: 'Poppins',
-        fontSize: 24.0,
-        fontWeight: FontWeight.w300,
-      ),
-      weekendTextStyle: TextStyle(
-        color: Color.fromRGBO(44, 152, 240, 1.0),
-      ),
-      thisMonthDayBorderColor: Color.fromRGBO(31, 48, 83, 1.0),
-//      weekDays: null, /// for pass null when you do not want to render weekDays
-//      headerText: Container( /// Example for rendering custom header
-//        child: Text('Custom Header'),
-//      ),
-      customDayBuilder: (
-        /// you can provide your own build function to make custom day containers
-        bool isSelectable,
-        int index,
-        bool isSelectedDay,
-        bool isToday,
-        bool isPrevMonthDay,
-        TextStyle textStyle,
-        bool isNextMonthDay,
-        bool isThisMonthDay,
-        DateTime day,
-      ) {
-        /// If you return null, [CalendarCarousel] will build container for current [day] with default function.
-        /// This way you can build custom containers for specific days only, leaving rest as default.
-
-        //Example: every 15th of month, we have a flight, we can place an icon in the container like that:
-        /*if (day.day == 15) {
-                  return Center(
-                    child: Icon(Icons.local_airport),
-                  );
-                } else {
-                  return null;
-                }*/
-        return null;
-      },
-      weekFormat: false,
-      markedDatesMap: _markedDateMap,
-      height: 400.0,
-      selectedDateTime: _currentDate,
-      daysHaveCircularBorder: null,
-
-      /// null for not rendering any border, true for circular border, false for rectangular border
-    );
-  }
 }
 
 /*onPressed: () {

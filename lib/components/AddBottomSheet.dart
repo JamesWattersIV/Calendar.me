@@ -48,6 +48,8 @@ class AddBottomSheet extends StatelessWidget{
                   padding: const EdgeInsets.symmetric(vertical:15.0),
                   child: FlatButton(
                     padding: EdgeInsets.all(10.0),
+                    shape:RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),),
                     child: Text(
                       'Add',
                       style: TextStyle(
