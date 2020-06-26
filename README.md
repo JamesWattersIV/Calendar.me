@@ -1,4 +1,3 @@
-
 <p align='center'>
   <img src='assets/images/Calendar.Me.PNG' alt='Calendar.me Logo'>
 </p>
@@ -7,7 +6,7 @@
   <a href='#Features'>Features</a>  • 
   <a href='#Technologies'>Technologies</a>  •
   <a href='#To-Do'>To-Do</a>  • 
-   <a href='#Resources'>Recources</a>  • 
+   <a href='#Resources'>Resources</a>  • 
 </p>  
 
 # About
@@ -19,10 +18,10 @@ This simple calendar and to-do list application built in Flutter. The intended p
 </p>
 
 ### Firebase Authentication
-The App includes firebase authentication for user login and registeration.
+The App includes firebase authentication for user login and registration.
 
 ### Cloud Firestore
-Events that a user has added or removed from their calendar are saved in a Firestore database. Therefore logging in between devices ensures calender events are accessible.
+Events that a user has added or removed from their calendar are saved in a Firestore database. Therefore logging in between devices ensures calendar events are accessible.
 
 ### To-Do
 The Daily To-Do list allows a user to add, complete and removes items that they need to complete. It is intended for a simple look at what a user needs to complete on a given day.
@@ -31,7 +30,7 @@ The Daily To-Do list allows a user to add, complete and removes items that they 
 The calendar screen shows the user what events they have on a given day. The calendar itself shows the user the current date, is scrollable, and when a specific date is selected, the events on that day are loaded.
 
 ### Events Page
-This page shows what events the user has in the up coming week. Additionally this is where events are added and removed from the calendar. 
+This page shows what events the user has in the upcoming week. Additionally, this is where events are added and removed from the calendar. 
 
 # Technologies 
 * Firebase - Authentication and Cloud Firestore
@@ -40,14 +39,14 @@ This page shows what events the user has in the up coming week. Additionally thi
 * Provider - Package used to share and make data sources easier to use and more reusable.
 
 # To-Do
-### Weatehr API
+### Weather API
 Add functionality to that makes a call to a weather API and shows the daily min/max temperatures and precipitation. 
 
 ### Sort Events
 Add sorting algorithm for events on the calendar and events page.
 
 ### Redesign Event Widget
-Redisgn the event widget so it looks nicer.
+Redesign the event widget so it looks nicer.
 
 # Resources
 * Background Design Inspired by Aurélien Salomon on dribbble - <a href='https://dribbble.com/shots/11222666-Android-Flutter-Reward-App-Login-Feed'> View on Dribbble</a>
