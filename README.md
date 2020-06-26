@@ -1,5 +1,5 @@
 <img
-   src='https://github.com/JamesWattersIV/Calendar.me/blob/master/assets/images/Calendar.Me.PNG'
+   src='assets/images/Calendar.Me.PNG'
    alt='Calendar.me Logo'
 >
 
