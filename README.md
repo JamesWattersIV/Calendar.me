@@ -5,7 +5,7 @@
 <p align='center'>
   <a href='#About'>About</a>  • 
   <a href='#Features'>Features</a>  • 
-  <a href='#Features'>Technologies</a>  •
+  <a href='#Technologies'>Technologies</a>  •
   <a href='#To-Do'>To-Do</a>  • 
    <a href='#Resources'>Recources</a>  • 
 </p>  
@@ -35,3 +35,20 @@ This page shows what events the user has in the up coming week. Additionally thi
 
 # Technologies 
 * Firebase - Authentication and Cloud Firestore
+* Animation Text Kit - Used for text animations and transitions
+* Flutter Calendar Carousel - Package used to create the Calendar Carousel
+* Provider - Package used to share and make data sources easier to use and more reusable.
+
+# To-Do
+### Weatehr API
+Add functionality to that makes a call to a weather API and shows the daily min/max temperatures and precipitation. 
+
+### Sort Events
+Add sorting algorithm for events on the calendar and events page.
+
+### Redesign Event Widget
+Redisgn the event widget so it looks nicer.
+
+# Resources
+* Background Design Inspired by Aurélien Salomon on dribbble - <a href='https://dribbble.com/shots/11222666-Android-Flutter-Reward-App-Login-Feed'> View on Dribbble</a>
+* <a href='https://flutter.dev/'>Flutter</a> 
