@@ -1,17 +1,3 @@
-# calendarapp
+# Calendar.me
+This simple calendar and to-do list application built in Flutter. The intended purpose of this project was to learn Flutter fundamentals while building an application with a purpose. Although simple at the surface, the app incorporates several technologies and concepts within flutter that form a solid foundation for further learning. 
 
-A simple calendar application build in flutter.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-"# Calendar.me" 
