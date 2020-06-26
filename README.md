@@ -1,3 +1,8 @@
+<img
+   src='https://github.com/JamesWattersIV/Calendar.me/blob/master/assets/images/Calendar.Me.PNG'
+   alt='Calendar.me Logo'
+>
+
 # Calendar.me
 <p align='center'>
    <a href='#About'>About</a>
