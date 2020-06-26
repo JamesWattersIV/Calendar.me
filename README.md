@@ -1,6 +1,6 @@
-[![Calendar-Me.png](https://i.postimg.cc/PJvFzqx2/Calendar-Me.png)](https://postimg.cc/wRHV9gDm)
-# Calendar.me
+
 <p align='center'>
+   [![Calendar-Me.png](https://i.postimg.cc/PJvFzqx2/Calendar-Me.png)](https://postimg.cc/wRHV9gDm)
    <a href='#About'>About</a>
 </p>
 
