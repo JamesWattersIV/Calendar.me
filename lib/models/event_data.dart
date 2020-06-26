@@ -17,7 +17,6 @@ class EventData extends ChangeNotifier {
     _dailyEvents.clear();
       for(int i = 0 ;i<events.length;i++){
         if (events[i].date == dateTimeHandler.handleFullDate(date)){
-          print('match found at $i');
           _dailyEvents.add(events[i]);
         }
       }
