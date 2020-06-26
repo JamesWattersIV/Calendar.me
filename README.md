@@ -1,8 +1,4 @@
-<img
-   src='assets/images/Calendar.Me.PNG'
-   alt='Calendar.me Logo'
->
-
+[Calendar-Me.png](https://postimg.cc/wRHV9gDm)
 # Calendar.me
 <p align='center'>
    <a href='#About'>About</a>
