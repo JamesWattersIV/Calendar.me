@@ -13,5 +13,5 @@ This simple calendar and to-do list application built in Flutter. The intended p
 
 # Features
 <p align='center'>
-<img src='assets/images/calendarme.gif'>
+<img src='assets/images/calendarme.gif' style="height:600px;">
 </p>
